@@ -1,13 +1,11 @@
 import { useState, useMemo, useRef } from "react";
-import { differenceInWeeks, format } from "date-fns";
-import { es } from "date-fns/locale";
+import { differenceInWeeks } from "date-fns";
 import { Download, Printer, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import marcusAurelius from "@/assets/marcus-aurelius.png";
-import html2canvas from "html2canvas";
 
 const TOTAL_YEARS = 80;
 const WEEKS_PER_YEAR = 52;
@@ -38,35 +36,12 @@ const MementoMoriCalendar = () => {
     return Math.max(0, TOTAL_WEEKS - weeksLived);
   }, [weeksLived]);
 
-  const handleDownload = async () => {
-    if (!calendarRef.current) return;
-    
-    try {
-      const canvas = await html2canvas(calendarRef.current, {
-        backgroundColor: "#ffffff",
-        scale: 2,
-      });
-      
-      const link = document.createElement("a");
-      link.download = "memento-mori-calendar.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-      
-      toast({
-        title: "Calendario descargado",
-        description: "Tu calendario Memento Mori ha sido guardado.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo descargar el calendario.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handlePrint = () => {
     window.print();
+    toast({
+      title: "Imprimiendo calendario",
+      description: "Se abrirá el diálogo de impresión.",
+    });
   };
 
   const renderWeekGrid = () => {
@@ -180,19 +155,11 @@ const MementoMoriCalendar = () => {
             {/* Actions */}
             <div className="flex flex-col gap-3">
               <Button 
-                onClick={handleDownload}
+                onClick={handlePrint}
                 className="btn-stoic flex items-center justify-center gap-2"
               >
-                <Download className="w-4 h-4" />
-                Descargar PNG
-              </Button>
-              <Button 
-                onClick={handlePrint}
-                variant="outline"
-                className="btn-ghost-stoic flex items-center justify-center gap-2"
-              >
                 <Printer className="w-4 h-4" />
-                Imprimir (35×45cm)
+                Imprimir (35x45cm)
               </Button>
             </div>
           </div>
