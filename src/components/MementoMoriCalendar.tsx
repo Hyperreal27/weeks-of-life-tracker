@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import marcusAurelius from "@/assets/marcus-aurelius.png";
+import piecesOfLifeLogo from "@/assets/pieces-of-life-logo.png";
 
 const WEEKS_PER_YEAR = 52;
 
@@ -68,7 +69,7 @@ const MementoMoriCalendar = () => {
     const rightLabelWidth = 30;
     const headerHeight = 60;
     const weekHeaderHeight = 20;
-    const footerHeight = 80;
+    const footerHeight = 120;
     const padding = 20;
     
     const gridWidth = WEEKS_PER_YEAR * (boxSize + gap);
@@ -121,11 +122,25 @@ const MementoMoriCalendar = () => {
       }
     }
     
-    // Footer quote
-    const quoteY = padding + headerHeight + weekHeaderHeight + gridHeight + 30;
-    svgContent += `<text x="${svgWidth / 2}" y="${quoteY}" text-anchor="middle" font-family="serif" font-size="11" font-style="italic" fill="#666">"No es la muerte lo que un hombre debe temer,</text>`;
-    svgContent += `<text x="${svgWidth / 2}" y="${quoteY + 16}" text-anchor="middle" font-family="serif" font-size="11" font-style="italic" fill="#666">sino nunca comenzar a vivir."</text>`;
-    svgContent += `<text x="${svgWidth / 2}" y="${quoteY + 36}" text-anchor="middle" font-family="sans-serif" font-size="9" letter-spacing="3" fill="#888">— MARCUS AURELIUS —</text>`;
+    // Footer quote (Seneca)
+    const quoteY = padding + headerHeight + weekHeaderHeight + gridHeight + 25;
+    const quoteText = "No es que tengamos poco tiempo para vivir, sino que desperdiciamos mucho de él. La vida es bastante larga y nos ha sido dada en medida suficientemente generosa para permitirnos lograr las mayores cosas si toda ella se invierte bien.";
+    
+    // Split quote into lines for SVG
+    const maxLineWidth = gridWidth * 0.9;
+    const fontSize = 9;
+    svgContent += `<text x="${svgWidth / 2}" y="${quoteY}" text-anchor="middle" font-family="serif" font-size="${fontSize}" fill="#666">`;
+    svgContent += quoteText;
+    svgContent += `</text>`;
+    
+    svgContent += `<text x="${svgWidth / 2}" y="${quoteY + 18}" text-anchor="middle" font-family="sans-serif" font-size="9" letter-spacing="2" fill="#888">SENECA</text>`;
+    
+    // Logo
+    const logoY = quoteY + 40;
+    const logoWidth = 80;
+    const logoHeight = 40;
+    const logoX = (svgWidth - logoWidth) / 2;
+    svgContent += `<image href="${piecesOfLifeLogo}" x="${logoX}" y="${logoY}" width="${logoWidth}" height="${logoHeight}" preserveAspectRatio="xMidYMid meet"/>`;
     
     svgContent += `</svg>`;
     
@@ -330,7 +345,8 @@ const MementoMoriCalendar = () => {
 
             <div 
               ref={calendarRef}
-              className="card-elevated p-8 bg-card relative overflow-hidden"
+              data-printable
+              className="card-elevated p-8 bg-card relative overflow-hidden print-area"
             >
               {/* Background Marcus Aurelius */}
               <div 
@@ -370,16 +386,20 @@ const MementoMoriCalendar = () => {
               </div>
 
               {/* Footer Quote */}
-              <div className="relative z-10 text-center mt-8 space-y-2">
-                <p className="font-serif text-sm italic text-muted-foreground">
-                  "No es la muerte lo que un hombre debe temer,
+              <div className="relative z-10 text-center mt-8 space-y-1 print-footer">
+                <p className="font-serif text-xs text-muted-foreground leading-relaxed">
+                  No es que tengamos poco tiempo para vivir, sino que desperdiciamos mucho de él. La vida es bastante larga y nos ha sido dada en medida suficientemente generosa para permitirnos lograr las mayores cosas si toda ella se invierte bien.
                 </p>
-                <p className="font-serif text-sm italic text-muted-foreground">
-                  sino nunca comenzar a vivir."
+                <p className="text-xs tracking-[0.2em] text-muted-foreground mt-2 uppercase">
+                  SENECA
                 </p>
-                <p className="text-xs tracking-widest text-muted-foreground mt-2">
-                  — MARCUS AURELIUS —
-                </p>
+                <div className="mt-4 flex justify-center">
+                  <img 
+                    src={piecesOfLifeLogo} 
+                    alt="Pieces of Life" 
+                    className="h-8 object-contain print-logo"
+                  />
+                </div>
               </div>
             </div>
           </div>
