@@ -161,7 +161,7 @@ const MementoMoriCalendar = () => {
     });
   };
 
-  const renderWeekGrid = () => {
+  const renderWeekGrid = (customBoxSize: number) => {
     const rows = [];
     
     for (let year = 0; year < totalYears; year++) {
@@ -174,7 +174,7 @@ const MementoMoriCalendar = () => {
         weekBoxes.push(
           <div
             key={`${year}-${week}`}
-            style={{ width: `${boxSize}px`, height: `${boxSize}px` }}
+            style={{ width: `${customBoxSize}px`, height: `${customBoxSize}px` }}
             className={`border transition-all duration-150 ${
               isLived 
                 ? "bg-foreground/80 border-foreground/60" 
@@ -185,10 +185,10 @@ const MementoMoriCalendar = () => {
       }
       
       rows.push(
-        <div key={year} className="flex gap-[2px] items-center">
-          <div className="flex gap-[2px]">{weekBoxes}</div>
+        <div key={year} className="flex gap-[1px] md:gap-[2px] items-center">
+          <div className="flex gap-[1px] md:gap-[2px]">{weekBoxes}</div>
           {(year + 1) % 5 === 0 && (
-            <span className="w-8 text-[10px] text-muted-foreground text-left pl-2">
+            <span className="w-6 md:w-8 text-[8px] md:text-[10px] text-muted-foreground text-left pl-1 md:pl-2">
               {year + 1}
             </span>
           )}
@@ -199,16 +199,20 @@ const MementoMoriCalendar = () => {
     return rows;
   };
 
+  // Calculate responsive box size for mobile
+  const mobileBoxSize = Math.max(4, Math.floor((window.innerWidth - 48) / (WEEKS_PER_YEAR + 2)));
+  const responsiveBoxSize = typeof window !== 'undefined' && window.innerWidth < 768 ? mobileBoxSize : boxSize;
+
   return (
-    <section className="py-20 bg-background print-calendar">
-      <div className="container mx-auto px-6">
-        <div className="grid lg:grid-cols-[320px_1fr] gap-12">
+    <section className="py-10 md:py-20 bg-background print-calendar">
+      <div className="container mx-auto px-3 md:px-6">
+        <div className="grid lg:grid-cols-[320px_1fr] gap-6 md:gap-12">
           {/* Controls Panel */}
-          <div className="space-y-6 no-print">
-            <div className="card-elevated p-6 space-y-6">
-              <h3 className="text-title">Tu información</h3>
+          <div className="space-y-4 md:space-y-6 no-print">
+            <div className="card-elevated p-4 md:p-6 space-y-4 md:space-y-6">
+              <h3 className="text-title text-lg md:text-xl">Tu información</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="birthDate" className="text-sm text-muted-foreground">
                     Fecha de nacimiento
@@ -222,9 +226,9 @@ const MementoMoriCalendar = () => {
                   />
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-2">
-                    <Label className="text-sm text-muted-foreground">
+                    <Label className="text-xs md:text-sm text-muted-foreground">
                       Años a mostrar
                     </Label>
                     <Input
@@ -236,8 +240,8 @@ const MementoMoriCalendar = () => {
                       max={120}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-sm text-muted-foreground">
+                  <div className="space-y-2 hidden md:block">
+                    <Label className="text-xs md:text-sm text-muted-foreground">
                       Tamaño cuadro
                     </Label>
                     <Input
@@ -259,7 +263,7 @@ const MementoMoriCalendar = () => {
                     onChange={(e) => setShowFilled(e.target.checked)}
                     className="w-4 h-4 accent-foreground"
                   />
-                  <Label htmlFor="showFilled" className="text-sm flex items-center gap-2">
+                  <Label htmlFor="showFilled" className="text-xs md:text-sm flex items-center gap-2">
                     <Check className="w-4 h-4" />
                     Rellenar semanas vividas
                   </Label>
@@ -268,7 +272,7 @@ const MementoMoriCalendar = () => {
                 <Button 
                   variant="outline"
                   onClick={handleClear}
-                  className="w-full text-destructive border-destructive/30 hover:bg-destructive/10"
+                  className="w-full text-destructive border-destructive/30 hover:bg-destructive/10 text-sm"
                 >
                   Limpiar todo
                 </Button>
@@ -276,39 +280,39 @@ const MementoMoriCalendar = () => {
             </div>
 
             {/* Statistics */}
-            <div className="card-elevated p-6 space-y-4">
-              <h3 className="text-title">Estadísticas</h3>
+            <div className="card-elevated p-4 md:p-6 space-y-3 md:space-y-4">
+              <h3 className="text-title text-lg md:text-xl">Estadísticas</h3>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-secondary/50 rounded-lg border border-border">
-                  <p className="text-3xl font-serif font-bold">{weeksLived.toLocaleString()}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
+              <div className="grid grid-cols-2 gap-2 md:gap-4">
+                <div className="text-center p-3 md:p-4 bg-secondary/50 rounded-lg border border-border">
+                  <p className="text-xl md:text-3xl font-serif font-bold">{weeksLived.toLocaleString()}</p>
+                  <p className="text-[8px] md:text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
                     Semanas vividas
                   </p>
                 </div>
-                <div className="text-center p-4 bg-secondary/50 rounded-lg border border-border">
-                  <p className="text-3xl font-serif font-bold">{weeksRemaining.toLocaleString()}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
+                <div className="text-center p-3 md:p-4 bg-secondary/50 rounded-lg border border-border">
+                  <p className="text-xl md:text-3xl font-serif font-bold">{weeksRemaining.toLocaleString()}</p>
+                  <p className="text-[8px] md:text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
                     Semanas restantes
                   </p>
                 </div>
-                <div className="text-center p-4 bg-secondary/50 rounded-lg border border-border">
-                  <p className="text-3xl font-serif font-bold">{yearsLived}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
+                <div className="text-center p-3 md:p-4 bg-secondary/50 rounded-lg border border-border">
+                  <p className="text-xl md:text-3xl font-serif font-bold">{yearsLived}</p>
+                  <p className="text-[8px] md:text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
                     Años vividos
                   </p>
                 </div>
-                <div className="text-center p-4 bg-secondary/50 rounded-lg border border-border">
-                  <p className="text-3xl font-serif font-bold">{percentageLived}%</p>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
+                <div className="text-center p-3 md:p-4 bg-secondary/50 rounded-lg border border-border">
+                  <p className="text-xl md:text-3xl font-serif font-bold">{percentageLived}%</p>
+                  <p className="text-[8px] md:text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
                     Vida transcurrida
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Background Opacity */}
-            <div className="card-elevated p-6 space-y-4">
+            {/* Background Opacity - Hidden on mobile */}
+            <div className="card-elevated p-4 md:p-6 space-y-3 md:space-y-4 hidden md:block">
               <h3 className="text-title">Opacidad del fondo</h3>
               <Slider
                 value={[bgOpacity]}
@@ -323,20 +327,20 @@ const MementoMoriCalendar = () => {
           </div>
 
           {/* Calendar Display */}
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             {/* Action Buttons */}
-            <div className="flex justify-end gap-3 no-print">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 md:gap-3 no-print">
               <Button 
                 variant="outline"
                 onClick={handleDownloadSVG}
-                className="flex items-center gap-2"
+                className="flex items-center justify-center gap-2 text-sm"
               >
                 <Download className="w-4 h-4" />
                 Descargar SVG
               </Button>
               <Button 
                 onClick={handlePrint}
-                className="btn-stoic flex items-center gap-2"
+                className="btn-stoic flex items-center justify-center gap-2 text-sm"
               >
                 <Printer className="w-4 h-4" />
                 Imprimir (35×45cm)
@@ -346,7 +350,7 @@ const MementoMoriCalendar = () => {
             <div 
               ref={calendarRef}
               data-printable
-              className="card-elevated p-8 bg-card relative overflow-hidden print-area"
+              className="card-elevated p-3 md:p-8 bg-card relative overflow-hidden print-area"
             >
               {/* Background Marcus Aurelius */}
               <div 
@@ -361,12 +365,12 @@ const MementoMoriCalendar = () => {
               </div>
               
               {/* Header */}
-              <div className="relative z-10 text-center mb-6">
-                <h2 className="text-display tracking-[0.3em]">MEMENTO MORI</h2>
+              <div className="relative z-10 text-center mb-3 md:mb-6">
+                <h2 className="text-lg md:text-3xl font-serif tracking-[0.15em] md:tracking-[0.3em]">MEMENTO MORI</h2>
               </div>
 
-              {/* Week Numbers Header */}
-              <div className="relative z-10 flex gap-[2px] mb-2">
+              {/* Week Numbers Header - Hidden on mobile for cleaner look */}
+              <div className="relative z-10 hidden md:flex gap-[2px] mb-2">
                 {Array.from({ length: WEEKS_PER_YEAR }, (_, i) => (
                   <div 
                     key={i} 
@@ -381,23 +385,23 @@ const MementoMoriCalendar = () => {
               </div>
 
               {/* Calendar Grid */}
-              <div className="relative z-10 space-y-[2px]">
-                {renderWeekGrid()}
+              <div className="relative z-10 space-y-[1px] md:space-y-[2px] overflow-x-hidden">
+                {renderWeekGrid(responsiveBoxSize)}
               </div>
 
               {/* Footer Quote */}
-              <div className="relative z-10 text-center mt-8 space-y-1 print-footer">
-                <p className="font-serif text-xs text-muted-foreground leading-relaxed">
-                  No es que tengamos poco tiempo para vivir, sino que desperdiciamos mucho de él. La vida es bastante larga y nos ha sido dada en medida suficientemente generosa para permitirnos lograr las mayores cosas si toda ella se invierte bien.
+              <div className="relative z-10 text-center mt-4 md:mt-8 space-y-1 print-footer">
+                <p className="font-serif text-[10px] md:text-xs text-muted-foreground leading-relaxed px-2">
+                  No es que tengamos poco tiempo para vivir, sino que desperdiciamos mucho de él.
                 </p>
-                <p className="text-xs tracking-[0.2em] text-muted-foreground mt-2 uppercase">
+                <p className="text-[10px] md:text-xs tracking-[0.15em] md:tracking-[0.2em] text-muted-foreground mt-2 uppercase">
                   SENECA
                 </p>
-                <div className="mt-4 flex justify-center">
+                <div className="mt-3 md:mt-4 flex justify-center">
                   <img 
                     src={piecesOfLifeLogo} 
                     alt="Pieces of Life" 
-                    className="h-8 object-contain print-logo"
+                    className="h-6 md:h-8 object-contain print-logo"
                   />
                 </div>
               </div>
