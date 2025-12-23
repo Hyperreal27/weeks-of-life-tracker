@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 
 const emailSchema = z.string().email("Por favor, introduce un email válido");
@@ -28,25 +27,28 @@ const NewsletterSection = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase
-        .from("newsletter_subscribers")
-        .insert({ email: email.trim().toLowerCase() });
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
 
-      if (error) {
-        if (error.code === "23505") {
-          toast({
-            title: "Ya estás suscrito",
-            description: "Este email ya está registrado en nuestra newsletter.",
-          });
-        } else {
-          throw error;
-        }
-      } else {
+      const data = await response.json();
+
+      if (response.ok) {
         toast({
           title: "¡Bienvenido!",
-          description: "Te has suscrito exitosamente a Pieces of Life.",
+          description: data.message || "Te has suscrito exitosamente a Pieces of Life.",
         });
         setEmail("");
+      } else {
+        toast({
+          title: "Error",
+          description: data.error || "Hubo un problema al suscribirte.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       toast({
@@ -86,7 +88,6 @@ const NewsletterSection = () => {
               {isLoading ? "Suscribiendo..." : "Suscribirme"}
             </Button>
           </form>
-
           <p className="text-xs text-muted-foreground">
             Sin spam. Solo contenido de valor. Puedes darte de baja cuando quieras.
           </p>
